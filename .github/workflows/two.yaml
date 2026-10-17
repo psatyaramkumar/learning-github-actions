@@ -36,9 +36,20 @@ jobs:
                 echo "Variable A: ${{ github.event.inputs.var_a }}"
                 echo "Variable B: ${{ github.event.inputs.var_b }}"
                 echo "Operation: ${{ github.event.inputs.operation }}"
-    calculate:
+    list-python-packages:
         needs: print-variables
         runs-on: ubuntu-latest
+        steps:
+            - name: List Installed Python Packages
+              run: |
+                echo "Listing installed Python packages:"
+                pip list
+    calculate:
+        needs: list-python-packages
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                shell: python
         steps:
             - name: Perform Calculation with python
               env:
