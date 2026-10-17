@@ -1,0 +1,68 @@
+name: second_workflow
+on: 
+    workflow_dispatch: 
+        inputs:
+            var_a:
+                description: "Enter the first number"
+                required: true
+                default: 10
+                type: number
+            var_b:
+                description: "Enter the second number"
+                required: true
+                default: 20
+                type: number
+            operation:
+                description: "Enter the operation to perform"
+                required: true
+                default: "add"
+                type: choice
+                options:
+                    - add
+                    - subtract
+                    - multiply
+                    - divide
+
+
+defaults:
+    run:
+        shell: bash
+jobs:
+    print-variables:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Print Input Variables
+              run: |
+                echo "Variable A: ${{ github.event.inputs.var_a }}"
+                echo "Variable B: ${{ github.event.inputs.var_b }}"
+                echo "Operation: ${{ github.event.inputs.operation }}"
+    calculate:
+        needs: print-variables
+        runs-on: ubuntu-latest
+        steps:
+            - name: Perform Calculation with python
+              env:
+                INPUT_VAR_A: ${{ github.event.inputs.var_a }}
+                INPUT_VAR_B: ${{ github.event.inputs.var_b }}
+                INPUT_OPERATION: ${{ github.event.inputs.operation }}
+              run: |
+                import os
+                a = int(os.environ["INPUT_VAR_A"])
+                b = int(os.environ["INPUT_VAR_B"])
+                operation = os.environ["INPUT_OPERATION"]
+                
+                if operation == "add":
+                    result = a + b
+                elif operation == "subtract":
+                    result = a - b
+                elif operation == "multiply":
+                    result = a * b
+                elif operation == "divide":
+                    if b != 0:
+                        result = a / b
+                    else:
+                        result = "Error: Division by zero"
+                else:
+                    result = "Error: Invalid operation"
+                
+                print(f"The result of {operation}ing {a} and {b} is: {result}")
