@@ -1,0 +1,52 @@
+name: first_workflow
+on: [push]
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  get-github-secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: linux commands to know the git secrets
+        run: |
+            ls -ahl
+            pwd
+            echo $GITHUB_SHA
+            echo $GITHUB_WORKSPACE
+            echo $GITHUB_REPOSITORY
+
+  get-windows-secrets:
+    defaults:
+      run:
+        shell: pwsh
+    runs-on: windows-latest
+    needs: get-github-secrets
+    steps:
+      - name: Get-Windows-Secrtes of Github
+        run: |
+            Get-Location
+            dir
+            echo $env:GITHUB_REPOSITORY
+  python-job:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: python
+    steps:
+      - name: python program one
+        run: |
+            print("Addition of Two Numbers")
+            a = 10
+            b = 2
+            print("The Addition of a & b are :", a+b)
+      - name: User Input
+        env:
+          INPUT_A: 10
+          Input_b: 20
+        run: |
+            import os
+            a = int(os.environ["INPUT_A"])
+            b = int(os.environ["Input_b"])
+            print("The entered values are : ",a,"and",b)
+
