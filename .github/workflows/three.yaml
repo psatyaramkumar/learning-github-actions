@@ -1,0 +1,34 @@
+name: pr_comment_add
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  comment:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Performing Git Checkout
+        run: |
+          echo "Performing the checkout"
+          ls -R .github
+
+      - name: Add Readme md in the PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+
+            const mdContent = fs.readFileSync('.github/pr-comment/pr-comment.md', 'utf8');
+
+            await github.rest.pulls.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.payload.pull_request.number,
+              body: mdContent
+            });
